@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 function App() {
 	const [state, setState] = useState("AES");
 	const [text, setText] = useState(); // is for the text
+	const [key, setKey] = useState("Secret Passphrase");
 	const [hash, setHash] = useState(""); // for the hash
 	const [textArea, setTextArea] = useState();
 	const [drop, setDrop] = useState(768); // for the hash
@@ -91,11 +92,13 @@ function App() {
 	const handelChangeHash = (e) => {
 		setHash(e.target.value);
 	};
-	async function handleInputChange(event) {
+	function handleInputChange(event) {
 		setTextArea(event.target.value);
 		setText(event.target.value);
 	}
-
+	function handleKeyChange(e) {
+		setKey(e.target.value);
+	}
 	function handleFileUpload(event) {
 		const file = event.target.files[0];
 		const reader = new FileReader();
@@ -146,29 +149,29 @@ function App() {
 		switch (state) {
 			case "AES":
 				// perform AES encryption
-				encryptedData = AES.encrypt(text, "Secret Passphrase").toString();
+				encryptedData = AES.encrypt(text, key).toString();
 				break;
 			case "RC4":
 				// perform RC4 encryption
-				encryptedData = RC4.encrypt(text, "Secret Passphrase").toString();
+				encryptedData = RC4.encrypt(text, key).toString();
 				break;
 			case "RC4Drop":
 				// perform RC4-Drop encryption
-				encryptedData = RC4Drop.encrypt(text, "Secret Passphrase", {
+				encryptedData = RC4Drop.encrypt(text, key, {
 					drop: drop,
 				}).toString();
 				break;
 			case "Rabbit":
 				// perform Rabbit encryption
-				encryptedData = Rabbit.encrypt(text, "Secret Passphrase").toString();
+				encryptedData = Rabbit.encrypt(text, key).toString();
 				break;
 			case "DES":
 				// perform DES encryption
-				encryptedData = DES.encrypt(text, "Secret Passphrase");
+				encryptedData = DES.encrypt(text, key);
 				break;
 			case "TripleDES":
 				// perform Triple DES encryption
-				encryptedData = TripleDES.encrypt(text, "Secret Passphrase");
+				encryptedData = TripleDES.encrypt(text, key);
 				break;
 			default:
 				// handle invalid state
@@ -185,34 +188,34 @@ function App() {
 		switch (state) {
 			case "AES":
 				// perform AES decryption
-				decryptData = AES.decrypt(hash, "Secret Passphrase");
+				decryptData = AES.decrypt(hash, key);
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			case "RC4":
 				// perform RC4 decryption
-				decryptData = RC4.decrypt(hash, "Secret Passphrase");
+				decryptData = RC4.decrypt(hash, key);
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			case "RC4Drop":
 				// perform RC4-Drop decryption
-				decryptData = RC4Drop.decrypt(hash, "Secret Passphrase", {
+				decryptData = RC4Drop.decrypt(hash, key, {
 					drop: drop,
 				});
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			case "Rabbit":
 				// perform Rabbit decryption
-				decryptData = Rabbit.decrypt(hash, "Secret Passphrase");
+				decryptData = Rabbit.decrypt(hash, key);
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			case "DES":
 				// perform DES decryption
-				decryptData = DES.decrypt(hash, "Secret Passphrase");
+				decryptData = DES.decrypt(hash, key);
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			case "TripleDES":
 				// perform Triple DES decryption
-				decryptData = TripleDES.decrypt(hash, "Secret Passphrase");
+				decryptData = TripleDES.decrypt(hash, key);
 				latin1 = crypto.enc.Latin1.stringify(decryptData);
 				break;
 			default:
@@ -223,9 +226,9 @@ function App() {
 		setTextArea(latin1);
 	}
 
-	// var encrypted = AES.encrypt("i love u ", "Secret Passphrase").toString();
+	// var encrypted = AES.encrypt("i love u ", key).toString();
 	// // var encrypted = "U2FsdGVkX1+D1BoZ+nnx8us3812NoGiVdg6CquEvY6c=";
-	// var decrypted = AES.decrypt(encrypted, "Secret Passphrase");
+	// var decrypted = AES.decrypt(encrypted, key);
 	// var words = crypto.enc.Base64.parse(encrypted);
 	// var hex = crypto.enc.Hex.stringify(words);
 	// var latin1 = crypto.enc.Latin1.stringify(decrypted);
@@ -235,7 +238,12 @@ function App() {
 			<div className="App">
 				<div>
 					<input type="file" onChange={handleFileUpload} />
-
+					{!hashAlgorithms.includes(state) ? (
+						<div className="key">
+							<p>key:</p>
+							<input type="text" value={key} onChange={handleKeyChange} name="" id="" />
+						</div>
+					) : null}
 					<textarea
 						name=""
 						id=""
@@ -282,15 +290,15 @@ function App() {
 							<input type="button" value="Hash data" onClick={hashData} />
 						</div>
 					)}
+					<textarea
+						name=""
+						id=""
+						cols="50"
+						rows="2"
+						value={textArea}
+						onChange={handleInputChange}></textarea>
 					<button onClick={downloadAllStates}>Download All States</button>
 				</div>
-				<textarea
-					name=""
-					id=""
-					cols="50"
-					rows="2"
-					value={textArea}
-					onChange={handleInputChange}></textarea>
 			</div>
 		</div>
 	);
