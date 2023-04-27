@@ -60,6 +60,10 @@ function App() {
 					text: text,
 					filename: "text: ",
 				},
+				state4: {
+					text: key,
+					filename: "key: ",
+				},
 			});
 		} else {
 			setStates({
@@ -78,6 +82,10 @@ function App() {
 				state4: {
 					text: drop,
 					filename: "drop",
+				},
+				state5: {
+					text: key,
+					filename: "key",
 				},
 			});
 		}
