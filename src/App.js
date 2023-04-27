@@ -4,6 +4,8 @@ import * as crypto from "crypto-js";
 import { MD5, SHA1, SHA224, SHA256, SHA3, SHA384, SHA512 } from "crypto-js";
 import { AES, RC4, RC4Drop, Rabbit, TripleDES, DES } from "crypto-js";
 import { useEffect, useState } from "react";
+import Asymmetric from "./comp/Asymmetric/Asymmetric";
+
 
 function App() {
 	const [state, setState] = useState("AES");
@@ -13,6 +15,8 @@ function App() {
 	const [textArea, setTextArea] = useState();
 	const [drop, setDrop] = useState(768); // for the hash
 	const [states, setStates] = useState();
+
+	const [assy, setAssy] = useState(false);
 
 	const hashAlgorithms = [
 		"MD5",
@@ -240,75 +244,100 @@ function App() {
 	// var words = crypto.enc.Base64.parse(encrypted);
 	// var hex = crypto.enc.Hex.stringify(words);
 	// var latin1 = crypto.enc.Latin1.stringify(decrypted);
+
+
+
+
 	return (
-		<div className="main">
-			<h1>Ciphers</h1>
-			<div className="App">
-				<div>
-					<input type="file" onChange={handleFileUpload} />
-					{!hashAlgorithms.includes(state) ? (
-						<div className="key">
-							<p>key:</p>
-							<input type="text" value={key} onChange={handleKeyChange} name="" id="" />
-						</div>
-					) : null}
-					<textarea
-						name=""
-						id=""
-						cols="50"
-						rows="2"
-						className="hash"
-						value={hash}
-						onChange={handelChangeHash}
-						placeholder="paste the hash and use the same method to decrypt"></textarea>
+		<>
+			<div className="main">
+				<h1>Ciphers</h1>
+				<button onClick={() => setAssy(!assy)}>{assy ? "Main" : "Asymmetric"}</button>
+				{assy ? (
+					<div className="App">
+						<div>
+							<input type="file" onChange={handleFileUpload} />
+							{!hashAlgorithms.includes(state) ? (
+								<div className="key">
+									<p>key:</p>
+									<input
+										type="text"
+										value={key}
+										onChange={handleKeyChange}
+										name=""
+										id=""
+									/>
+								</div>
+							) : null}
+							<textarea
+								name=""
+								id=""
+								cols="50"
+								rows="2"
+								className="hash"
+								value={hash}
+								onChange={handelChangeHash}
+								placeholder="paste the hash and use the same method to decrypt"></textarea>
 
-					<select onChange={(e) => handleChange(e)} name="" id="">
-						<option value="AES">AES</option>
-						<option value="RC4">RC4</option>
-						<option value="RC4Drop">RC4Drop</option>
-						<option value="Rabbit">Rabbit</option>
-						<option value="DES">DES</option>
-						<option value="TripleDES">TripleDES</option>
-						<option value="MD5">MD5</option>
-						<option value="SHA1">SHA1</option>
-						<option value="SHA224">SHA224</option>
-						<option value="SHA256">SHA256</option>
-						<option value="SHA3">SHA3</option>
-						<option value="SHA384">SHA384</option>
-						<option value="SHA512">SHA512</option>
-					</select>
-					{state === "RC4Drop" ? (
-						<input
-							type="number"
-							name=""
-							id=""
-							value={drop}
-							onChange={handelNumberChange}
-							placeholder="Drop: def 768"
-						/>
-					) : null}
+							<select onChange={(e) => handleChange(e)} name="" id="">
+								<option value="AES">AES</option>
+								<option value="RC4">RC4</option>
+								<option value="RC4Drop">RC4Drop</option>
+								<option value="Rabbit">Rabbit</option>
+								<option value="DES">DES</option>
+								<option value="TripleDES">TripleDES</option>
+								<option value="MD5">MD5</option>
+								<option value="SHA1">SHA1</option>
+								<option value="SHA224">SHA224</option>
+								<option value="SHA256">SHA256</option>
+								<option value="SHA3">SHA3</option>
+								<option value="SHA384">SHA384</option>
+								<option value="SHA512">SHA512</option>
+							</select>
+							{state === "RC4Drop" ? (
+								<input
+									type="number"
+									name=""
+									id=""
+									value={drop}
+									onChange={handelNumberChange}
+									placeholder="Drop: def 768"
+								/>
+							) : null}
 
-					{!hashAlgorithms.includes(state) ? (
-						<div className="buttons">
-							<input type="button" value="encryptData" onClick={encryptData} />
-							<input type="button" value="decryptData" onClick={decryptData} />
+							{!hashAlgorithms.includes(state) ? (
+								<div className="buttons">
+									<input
+										type="button"
+										value="encryptData"
+										onClick={encryptData}
+									/>
+									<input
+										type="button"
+										value="decryptData"
+										onClick={decryptData}
+									/>
+								</div>
+							) : (
+								<div className="buttons">
+									<input type="button" value="Hash data" onClick={hashData} />
+								</div>
+							)}
+							<textarea
+								name=""
+								id=""
+								cols="50"
+								rows="2"
+								value={textArea}
+								onChange={handleInputChange}></textarea>
+							<button onClick={downloadAllStates}>Download All States</button>
 						</div>
-					) : (
-						<div className="buttons">
-							<input type="button" value="Hash data" onClick={hashData} />
-						</div>
-					)}
-					<textarea
-						name=""
-						id=""
-						cols="50"
-						rows="2"
-						value={textArea}
-						onChange={handleInputChange}></textarea>
-					<button onClick={downloadAllStates}>Download All States</button>
-				</div>
+					</div>
+				) : (
+					<Asymmetric />
+				)}
 			</div>
-		</div>
+		</>
 	);
 }
 

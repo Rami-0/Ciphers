@@ -29,6 +29,9 @@ h1{
 	color: aliceblue;
 	padding-bottom: 40px;
 }
+p{
+	color: white;
+}
 
 .App > div {
 	display: flex;
